@@ -18,6 +18,7 @@ use token::get_token_contract;
 use commands::fetch::*;
 use commands::print::*;
 use constants::*;  // Use the constants
+use std::collections::HashMap;
 
 // Main function
 #[tokio::main]
@@ -67,6 +68,9 @@ async fn main() -> Result<(), Box<AppError>> {
     // Instantiate the ERC-20 contract
     let token_contract = get_token_contract(provider.clone(), token_address);
 
+    // Cache for token decimals
+    let mut decimals_cache: HashMap<Address, u8> = HashMap::new();
+
     // Fetch and print the token name
     let token_name = token_contract.name().call().await.map_err(AppError::ContractError)?;
     println!("Token Name:");
@@ -82,8 +86,14 @@ async fn main() -> Result<(), Box<AppError>> {
     let token_symbol_art = standard_font.convert(&token_symbol);
     println!("{}", token_symbol_art.unwrap());
 
-    // Fetch the token decimals
-    let token_decimals = token_contract.decimals().call().await.map_err(AppError::ContractError)?;
+    // Fetch the token decimals (with caching)
+    let token_decimals = if let Some(&decimals) = decimals_cache.get(&token_address) {
+        decimals
+    } else {
+        let decimals = token_contract.decimals().call().await.map_err(AppError::ContractError)?;
+        decimals_cache.insert(token_address, decimals);
+        decimals
+    };
     println!("Token decimals: {:?}", token_decimals);
 
     // Execute the command based on the CLI arguments
