@@ -1,0 +1,17 @@
+[package]
+name = "TokenTrail"
+version = "0.1.0"
+edition = "2021"
+authors = ["Ajeet Yadav <yadavajeetmail@gmail.com>"] 
+
+[dependencies]
+ethers = "2.0"
+tokio = { version = "1.0", features = ["full"] }
+chrono = "0.4"
+clap = { version = "4.5.1", features = ["derive"] }
+url = "2.2"  
+figlet-rs = "0.1.5"
+dotenv = "0.15.0"
+
+
+
