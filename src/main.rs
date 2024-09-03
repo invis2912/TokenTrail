@@ -4,6 +4,7 @@ mod provider;
 mod token;
 mod commands;
 mod tests;
+mod constants;  // Import the constants module
 
 use cli::{Cli, Commands};
 use dotenv::dotenv;
@@ -16,13 +17,24 @@ use provider::setup_provider;
 use token::get_token_contract;
 use commands::fetch::*;
 use commands::print::*;
+use constants::*;  // Use the constants
+
 // Main function
 #[tokio::main]
 async fn main() -> Result<(), Box<AppError>> {
     dotenv().ok();  // Load the .env file
     
     // Parse the CLI arguments
-    let cli = Cli::parse();
+    let mut cli = Cli::parse();
+
+    // Set default values if not provided
+    if cli.command.is_none() {
+        cli.command = Some(Commands::FetchTransactionsBetween {
+            from: DEFAULT_FROM_ADDRESS.to_string(),
+            to: DEFAULT_TO_ADDRESS.to_string(),
+            blocks_back: DEFAULT_BLOCKS_BACK,
+        });
+    }
 
     // Load standard font and print "TokenTrail" as ASCII art
     let standard_font = FIGfont::standard().unwrap();

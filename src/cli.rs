@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand, ValueEnum};
+use crate::constants::{DEFAULT_CHAIN, DEFAULT_TOKEN_ADDRESS};  // Import the constants
 
 // Define the Chain enum
 #[derive(ValueEnum, Clone, Debug)]
@@ -28,10 +29,10 @@ impl Chain {
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
-    #[arg(short, long, value_enum, default_value = "Ethereum")]
+    #[arg(short, long, value_enum, default_value_t = DEFAULT_CHAIN)]  // Default chain is chiliz (lowercase)
     pub chain: Chain,
 
-    #[arg(short, long)]
+    #[arg(short, long, default_value_t = DEFAULT_TOKEN_ADDRESS.to_string())]  // Provide a default token address
     pub token_address: String, // Add token address as an argument
 
     #[command(subcommand)]
